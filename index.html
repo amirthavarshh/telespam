@@ -3,489 +3,219 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title> SpamBot</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <title>SpamBot | Precision Detection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
     :root {
-      --black:  #090909;
-      --dark:   #111;
-      --card:   #161616;
-      --border: #252525;
-      --white:  #ffffff;
-      --cream:  #e9e4de;
-      --muted:  #777;
-      --dim:    #444;
+      --primary: #00ff88; 
+      --bg: #050505;
+      --surface: #111111;
+      --card-glass: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.08);
+      --text-main: #e0e0e0;
+      --text-dim: #888;
+      --white: #ffffff;
     }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: var(--black);
-      color: var(--white);
-      font-family: 'Barlow', sans-serif;
-      font-weight: 300;
-      line-height: 1.65;
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
       overflow-x: hidden;
     }
 
-    /* ─── NAV ─── */
+    /* ─── NAVIGATION ─── */
     nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      position: fixed; top: 0; width: 100%; z-index: 1000;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 52px; height: 68px;
-      background: rgba(9,9,9,.93);
-      backdrop-filter: blur(14px);
+      padding: 0 5%; height: 80px;
+      background: rgba(5, 5, 5, 0.8);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
-    .logo { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
     .logo-box {
-      width: 38px; height: 38px;
-      border: 1px solid var(--white);
+      width: 40px; height: 40px;
+      background: var(--primary);
       display: flex; align-items: center; justify-content: center;
+      clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
     }
-    .logo-box i { font-size: 11px; color: var(--white); margin-left: 2px; }
-    .logo-wordmark { display: flex; flex-direction: column; line-height: 1; }
+    .logo-box i { color: #000; font-size: 14px; }
     .logo-wordmark b {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 21px; letter-spacing: 3px; color: var(--white);
+      font-size: 24px; letter-spacing: 2px; color: var(--white);
     }
-    .logo-wordmark small {
-      font-size: 8px; letter-spacing: 5px;
-      text-transform: uppercase; color: var(--muted);
-    }
-    .nav-links { display: flex; align-items: center; gap: 34px; list-style: none; }
+    .nav-links { display: flex; align-items: center; gap: 40px; list-style: none; }
     .nav-links a {
-      color: var(--cream); text-decoration: none;
-      font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
-      opacity: .8; transition: opacity .2s;
+      color: var(--text-main); text-decoration: none;
+      font-size: 12px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; transition: color 0.3s;
     }
-    .nav-links a:hover { opacity: 1; }
+    .nav-links a:hover { color: var(--primary); }
     .nav-btn {
-      padding: 9px 22px;
-      border: 1px solid var(--white) !important;
-      border-radius: 40px; opacity: 1 !important;
-      transition: background .2s, color .2s !important;
+      padding: 10px 25px; border: 1px solid var(--primary);
+      color: var(--primary) !important; border-radius: 4px;
     }
-    .nav-btn:hover { background: var(--white) !important; color: var(--black) !important; }
+    .nav-btn:hover { background: var(--primary); color: #000 !important; }
 
     /* ─── HERO ─── */
     .hero {
-      margin-top: 68px; height: 240px;
-      position: relative;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center; overflow: hidden;
+      padding-top: 80px; height: 40vh;
+      position: relative; display: flex; align-items: center; justify-content: center;
+      text-align: center; background: radial-gradient(circle at center, #111 0%, #050505 100%);
     }
-    .hero-bg {
-      position: absolute; inset: 0;
-      background: linear-gradient(180deg, #1e1e1e 0%, #0b0b0b 100%);
-    }
-    .hero-bg::before {
-      content: '';
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-    }
-    .hero-vignette {
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,.8) 100%);
-    }
-    .hero-content { position: relative; z-index: 2; }
-    .hero-content h1 {
+    .hero h1 {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(52px, 9vw, 78px);
-      letter-spacing: 8px;
-      animation: up .7s ease both;
+      font-size: clamp(50px, 10vw, 100px);
+      letter-spacing: 15px; color: var(--white);
+      text-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
     }
-    .breadcrumb {
-      font-size: 12px; letter-spacing: 2.5px;
-      color: var(--muted); text-transform: uppercase;
-      margin-top: 10px;
-      animation: up .7s .12s ease both;
-    }
-    .breadcrumb a { color: var(--muted); text-decoration: none; }
-    .breadcrumb a:hover { color: var(--white); }
-    .breadcrumb span { margin: 0 10px; }
 
     /* ─── CONTACT SECTION ─── */
     .contact-section {
-      max-width: 1120px; margin: 0 auto;
-      padding: 88px 36px;
-      display: grid;
-      grid-template-columns: 1.05fr 1fr;
-      gap: 64px; align-items: start;
+      max-width: 1200px; margin: -50px auto 0;
+      padding: 0 20px 100px;
+      display: grid; grid-template-columns: 1.2fr 0.8fr;
+      gap: 40px; position: relative; z-index: 10;
     }
 
-    /* FORM */
     .form-wrap {
-      background: var(--card);
+      background: var(--surface);
       border: 1px solid var(--border);
-      padding: 52px 44px;
-      animation: up .8s .1s ease both;
-    }
-    .eyebrow {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; letter-spacing: 4px;
-      text-transform: uppercase; color: var(--muted);
-      margin-bottom: 6px;
+      padding: 60px; border-radius: 8px;
     }
     .section-title {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 46px; letter-spacing: 2px;
-      line-height: 1; margin-bottom: 36px;
-    }
-    .field { margin-bottom: 20px; }
-    .field label {
-      display: block;
-      font-size: 10px; letter-spacing: 2.5px;
-      text-transform: uppercase; color: var(--muted);
-      margin-bottom: 7px;
-    }
-    .field input, .field textarea {
-      width: 100%; background: transparent;
-      border: 1px solid var(--border);
-      color: var(--white); padding: 13px 16px;
-      font-family: 'Barlow', sans-serif; font-size: 14px;
-      outline: none; transition: border-color .2s; resize: none;
-    }
-    .field input::placeholder, .field textarea::placeholder { color: #3d3d3d; }
-    .field input:focus, .field textarea:focus { border-color: rgba(255,255,255,.45); }
-    .field textarea { height: 126px; }
-    .btn-send {
-      width: 100%; margin-top: 6px; padding: 15px;
-      background: var(--white); color: var(--black);
-      border: 1px solid var(--white); cursor: pointer;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 12px; letter-spacing: 3.5px;
-      text-transform: uppercase; font-weight: 700;
-      transition: background .22s, color .22s, transform .15s;
-    }
-    .btn-send:hover {
-      background: transparent; color: var(--white);
-      transform: translateY(-1px);
+      font-size: 50px; margin-bottom: 40px; letter-spacing: 2px;
     }
 
-    /* INFO */
-    .info-wrap { animation: up .8s .25s ease both; }
+    /* INFO SIDE */
+    .info-wrap { padding-top: 20px; }
     .info-desc {
-      font-size: 14px; color: #888; line-height: 1.85;
-      padding-left: 18px; border-left: 2px solid var(--border);
-      margin-bottom: 44px;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 25px; border-radius: 8px;
+      border-left: 3px solid var(--primary);
+      font-size: 15px; color: #bbb; margin-bottom: 30px;
+      min-height: 120px;
     }
-    .ci-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 30px; margin-bottom: 38px;
+    
+    /* Metrics Styling */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
     }
-    .ci { display: flex; flex-direction: column; gap: 9px; }
-    .ci-icon {
-      width: 46px; height: 46px;
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 17px; color: var(--white);
-      transition: background .2s, border-color .2s;
+    .metric-card {
+        background: var(--card-glass);
+        border: 1px solid var(--border);
+        padding: 15px;
+        text-align: center;
+        border-radius: 8px;
     }
-    .ci:hover .ci-icon {
-      background: rgba(255,255,255,.06);
-      border-color: rgba(255,255,255,.45);
+    .metric-value {
+        display: block;
+        font-size: 24px;
+        font-family: 'Bebas Neue', sans-serif;
+        color: var(--white);
     }
-    .ci-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px; letter-spacing: 3px;
-      text-transform: uppercase; color: var(--muted);
-    }
-    .ci-val { font-size: 13.5px; color: var(--cream); }
-    .map-box {
-      width: 100%; height: 178px;
-      border: 1px solid var(--border); overflow: hidden;
-    }
-    .map-box iframe {
-      width: 100%; height: 100%; border: none;
-      filter: grayscale(1) contrast(.85) invert(1);
+    .metric-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        color: var(--text-dim);
     }
 
-    /* ─── CTA ─── */
-    .cta-band {
-      position: relative; overflow: hidden;
-      padding: 110px 48px; text-align: center;
+    .ci-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+    .ci {
+      display: flex; align-items: center; gap: 20px;
+      padding: 20px; background: var(--card-glass);
+      border: 1px solid var(--border); border-radius: 8px;
     }
-    .cta-bg {
-      position: absolute; inset: 0;
-      background: linear-gradient(160deg, #1b1b1b 0%, #0c0c0c 60%, #181818 100%);
-    }
-    .cta-inner { position: relative; z-index: 2; }
-    .cta-tag {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; letter-spacing: 5px;
-      text-transform: uppercase; color: var(--muted);
-      margin-bottom: 14px;
-    }
-    .cta-heading {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(38px, 6.5vw, 64px);
-      letter-spacing: 3px; line-height: 1.05;
-      margin-bottom: 34px;
-    }
-    .btn-started {
-      display: inline-block; padding: 14px 44px;
-      background: var(--white); color: var(--black);
-      text-decoration: none;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 12px; letter-spacing: 3px;
-      text-transform: uppercase; font-weight: 700;
-      border-radius: 40px;
-      border: 1px solid var(--white);
-      transition: transform .2s, box-shadow .2s, background .2s, color .2s;
-    }
-    .btn-started:hover {
-      background: transparent; color: var(--white);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 32px rgba(255,255,255,.12);
-    }
+    .ci-icon { color: var(--primary); font-size: 20px; width: 30px; }
+    .ci-label { display: block; font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
+    .ci-val { color: var(--white); font-weight: 500; }
 
-    /* ─── FOOTER ─── */
-    footer {
-      background: #0d0d0d;
-      border-top: 1px solid var(--border);
-      padding: 64px 52px 28px;
-    }
-    .footer-inner { max-width: 1120px; margin: 0 auto; }
-    .footer-top {
-      display: grid;
-      grid-template-columns: 1.6fr 1fr 1.3fr;
-      gap: 64px;
-      padding-bottom: 44px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 24px;
-    }
-    .ft-about p {
-      font-size: 13px; color: var(--dim);
-      line-height: 1.8; margin: 16px 0 24px; max-width: 260px;
-    }
-    .socials { display: flex; gap: 10px; }
-    .socials a {
-      width: 34px; height: 34px;
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; color: var(--muted);
-      text-decoration: none; transition: border-color .2s, color .2s;
-    }
-    .socials a:hover { border-color: var(--white); color: var(--white); }
-    .footer-col h5 {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px; letter-spacing: 3.5px;
-      text-transform: uppercase; color: var(--white);
-      margin-bottom: 20px;
-    }
-    .footer-col ul { list-style: none; }
-    .footer-col ul li { margin-bottom: 11px; }
-    .footer-col ul li a {
-      font-size: 13px; color: var(--dim);
-      text-decoration: none; transition: color .2s;
-    }
-    .footer-col ul li a:hover { color: var(--white); }
-    .fc-row {
-      display: flex; align-items: flex-start;
-      gap: 11px; margin-bottom: 13px;
-      font-size: 13px; color: var(--dim);
-    }
-    .fc-row i { color: var(--muted); margin-top: 2px; min-width: 14px; }
-    .footer-bottom {
-      text-align: center;
-      font-size: 11px; letter-spacing: 1.5px; color: var(--dim);
-    }
+    footer { background: #030303; padding: 60px 5% 30px; border-top: 1px solid var(--border); margin-top: 50px;}
+    .footer-bottom { text-align: center; padding-top: 30px; color: #444; font-size: 12px; }
 
-    /* ─── ANIMATIONS ─── */
-    @keyframes up {
-      from { opacity: 0; transform: translateY(22px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ─── RESPONSIVE ─── */
-    @media (max-width: 820px) {
-      nav { padding: 0 22px; }
-      .nav-links li:not(:last-child) { display: none; }
-      .contact-section { grid-template-columns: 1fr; padding: 56px 22px; gap: 44px; }
-      .form-wrap { padding: 34px 24px; }
-      .footer-top { grid-template-columns: 1fr; gap: 36px; }
-      footer { padding: 48px 22px 24px; }
-      .cta-band { padding: 80px 22px; }
+    @media (max-width: 992px) {
+      .contact-section { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 60px; }
     }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a href="#" class="logo">
-    <div class="logo-box"><i class="fas fa-play"></i></div>
-    <div class="logo-wordmark">
-      <b>SPAM</b>
-      <small>bot</small>
-    </div>
+    <div class="logo-box"><i class="fas fa-robot"></i></div>
+    <div class="logo-wordmark"><b>SPAM</b><span style="color:var(--primary)">BOT</span></div>
   </a>
   <ul class="nav-links">
-    <li><a href="#">Home</a></li>
-    <li><a href="#">About Us</a></li>
-    <li><a href="#">Pages &#9662;</a></li>
-    <li><a href="#" class="nav-btn">Contact Us</a></li>
+    <li><a href="#">Engine</a></li>
+    <li><a href="#">Intelligence</a></li>
+    <li><a href="#" class="nav-btn">Secure Access</a></li>
   </ul>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-vignette"></div>
   <div class="hero-content">
-    <h1>Spam Bot</h1>
-    <p class="breadcrumb">
-    
-    </p>
+    <h1>TERMINATE SPAM</h1>
   </div>
 </section>
 
-<!-- CONTACT -->
 <section class="contact-section">
-
-  <!-- FORM -->
   <div class="form-wrap">
-    <p class="eyebrow">Contact Us</p>
-    <h2 class="section-title">Get In Touch</h2>
+    <h2 class="section-title">Neural Live Feed</h2>
+    <p style="color: var(--text-dim); margin-bottom: 20px;">Monitoring incoming Telegram transmissions in real-time...</p>
+    
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <span class="metric-label">Total Scanned</span>
+            <span id="stat-total" class="metric-value">0</span>
+        </div>
+        <div class="metric-card" style="border-color: #ff444433;">
+            <span class="metric-label" style="color:#ff4444">Spam Blocked</span>
+            <span id="stat-spam" class="metric-value" style="color:#ff4444">0</span>
+        </div>
+        <div class="metric-card" style="border-color: #00ff8833;">
+            <span class="metric-label" style="color:#00ff88">Clean Msgs</span>
+            <span id="stat-normal" class="metric-value" style="color:#00ff88">0</span>
+        </div>
+    </div>
 
     <div class="field">
-      <label>Name</label>
-      <input type="text" placeholder="Your Name…"/>
+      <label>Last Intercepted Packet</label>
+      <div id="live-message-box" style="background:#090909; padding:20px; border-radius:4px; border: 1px solid var(--border); min-height:100px; color:var(--text-dim); font-size:14px;">
+        Awaiting first transmission...
+      </div>
     </div>
-    <div class="field">
-      <label>Email</label>
-      <input type="email" placeholder="example@yourmail.com"/>
-    </div>
-    <div class="field">
-      <label>Subject</label>
-      <input type="text" placeholder="Title…"/>
-    </div>
-    <div class="field">
-      <label>Message</label>
-      <textarea placeholder="Type Here…"></textarea>
-    </div>
-    <button class="btn-send">Send Now</button>
   </div>
 
-  <!-- INFO -->
   <div class="info-wrap">
-    <p class="info-desc">
-      In tempus nisl turpis, at ultrices dui eleifend a. Quisque et quam vel
-      nunc consectetur pharetra euismod et elit. Morbi nibh tortor, ullamcorper
-      id purus eu, rhoncus consequat velit.
-    </p>
+    <div class="info-desc" id="status-container">
+      <b style="color:var(--primary)">System Status:</b> Initializing link...
+    </div>
 
     <div class="ci-grid">
       <div class="ci">
-        <div class="ci-icon"><i class="fas fa-phone"></i></div>
-        <span class="ci-label">Phone Number</span>
-        <span class="ci-val">+6282 4032 567</span>
+        <i class="fas fa-bolt ci-icon"></i>
+        <div><span class="ci-label">Engine Latency</span><span class="ci-val">< 100ms</span></div>
       </div>
       <div class="ci">
-        <div class="ci-icon"><i class="fas fa-envelope"></i></div>
-        <span class="ci-label">Email Address</span>
-        <span class="ci-val">Example@Email.Com</span>
-      </div>
-      <div class="ci">
-        <div class="ci-icon"><i class="fab fa-whatsapp"></i></div>
-        <span class="ci-label">Whatsapp</span>
-        <span class="ci-val">082-245-7253</span>
-      </div>
-      <div class="ci">
-        <div class="ci-icon"><i class="fas fa-location-dot"></i></div>
-        <span class="ci-label">Our Office</span>
-        <span class="ci-val">2443 Oak Ridge Omaha, QA 45065</span>
+        <i class="fas fa-shield-halved ci-icon"></i>
+        <div><span class="ci-label">Filter Protocol</span><span class="ci-val">Multinomial NB</span></div>
       </div>
     </div>
-
-    <div class="map-box">
-      <iframe
-        loading="lazy"
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d48886.13282504635!2d-96.03040755!3d41.26752035!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87938dc8b50cfced%3A0x46424d4fae37b604!2sOmaha%2C%20NE!5e0!3m2!1sen!2sus!4v1700000000000">
-      </iframe>
-    </div>
-  </div>
-
-</section>
-
-<!-- CTA -->
-<section class="cta-band">
-  <div class="cta-bg"></div>
-  <div class="cta-inner">
-    <p class="cta-tag">Hire Us Now</p>
-    <h2 class="cta-heading">We Are Always Ready To<br>Take A Perfect Shot</h2>
-    <a href="#" class="btn-started">Get Started</a>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
-  <div class="footer-inner">
-    <div class="footer-top">
-
-      <div class="ft-about">
-        <a href="#" class="logo">
-          <div class="logo-box"><i class="fas fa-play"></i></div>
-          <div class="logo-wordmark">
-            <b>VIGRAPH</b>
-            <small>Studio</small>
-          </div>
-        </a>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit
-           tellus, luctus nec ullamcorper mattis.</p>
-        <div class="socials">
-          <a href="#"><i class="fab fa-facebook-f"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-youtube"></i></a>
-        </div>
-      </div>
-
-      <div class="footer-col">
-        <h5>Our Store</h5>
-        <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Service</a></li>
-          <li><a href="#">Contact</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h5>Get In Touch</h5>
-        <div class="fc-row">
-          <i class="fas fa-location-dot"></i>
-          <span>2443 Oak Ridge Omaha, QA 45065</span>
-        </div>
-        <div class="fc-row">
-          <i class="fas fa-phone"></i>
-          <span>207-874-432</span>
-        </div>
-        <div class="fc-row">
-          <i class="fab fa-whatsapp"></i>
-          <span>082-245-7253</span>
-        </div>
-        <div class="fc-row">
-          <i class="fas fa-envelope"></i>
-          <span>support@site.com</span>
-        </div>
-      </div>
-    </div>
-
-    <p class="footer-bottom">
-      Copyright &copy; 2023 Vigraph &nbsp;|&nbsp; Powered by Vigraph
-    </p>
-  </div>
-</footer>
+    <p class="footer-bottom">© 2026 SPAMBOT NEURAL SYSTEMS. LIVE MONITORING ENABLED.</p>
 </footer>
 
 <script>
@@ -494,25 +224,37 @@ async function fetchMessage() {
         const response = await fetch("http://127.0.0.1:5000/get_message");
         const data = await response.json();
 
-        document.querySelector(".info-desc").innerHTML =
-            "<b>Latest Message:</b> " + data.text +
-            "<br><b>Status:</b> " +
+        // Update the main status text
+        document.getElementById("status-container").innerHTML =
+            "<b style='color:var(--primary)'>System Status:</b> Active" +
+            "<br><b style='color:var(--primary)'>Latest Result:</b> " +
             (data.status === "SPAM"
-                ? "<span style='color:red;font-weight:bold'>SPAM</span>"
-                : "<span style='color:lightgreen;font-weight:bold'>NORMAL</span>");
+                ? "<span style='color:#ff4444;font-weight:bold;'>[ SPAM DETECTED ]</span>"
+                : data.status === "NORMAL" 
+                ? "<span style='color:#00ff88;font-weight:bold;'>[ VERIFIED CLEAN ]</span>"
+                : "<span style='color:var(--text-dim)'>Waiting...</span>");
+
+        // Update the live message content
+        const msgBox = document.getElementById("live-message-box");
+        msgBox.innerText = data.text;
+        msgBox.style.color = (data.status === "SPAM") ? "#ff4444" : "#ffffff";
+
+        // Update the counter stats
+        document.getElementById("stat-total").innerText = data.total;
+        document.getElementById("stat-spam").innerText = data.spam_count;
+        document.getElementById("stat-normal").innerText = data.normal_count;
 
     } catch (error) {
-        console.log("Backend not running...");
+        document.getElementById("status-container").innerHTML = 
+            "<b style='color:#ff4444'>System Status:</b> Offline (Check Backend)";
     }
 }
 
-// run every second
+// Update every 1 second for a "live" feel
 setInterval(fetchMessage, 1000);
+// Initial call
+fetchMessage();
 </script>
-
-
-</body>
-</html>
 
 </body>
 </html>
