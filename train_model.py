@@ -26,12 +26,12 @@ def clean_text(text):
 
 
 
-# LOAD DATA
+
 df = pd.read_csv("spam.csv", encoding="latin-1")
 
 print("\nColumns in dataset:", list(df.columns))
 
-# Assume first column = label, last column = message
+
 label_col = df.columns[0]
 text_col = df.columns[-1]
 
