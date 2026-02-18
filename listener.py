@@ -3,8 +3,8 @@ from telethon import TelegramClient, events
 import joblib
 import re
 
-api_id = 24541791
-api_hash = "199d4a2fe10f292214cf25784cada04d"
+api_id = 12345678
+api_hash = "PASTE_API_HASH_HERE"
 
 client = TelegramClient("session", api_id, api_hash)
 
