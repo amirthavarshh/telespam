@@ -1,16 +1,14 @@
-from telethon import TelegramClient, events
 from server import update_message
-import joblib, re, asyncio
+from telethon import TelegramClient, events
+import joblib
+import re
 
-api_id = 12345678
-api_hash = "PASTE_API_HASH_HERE"
+api_id = 24541791
+api_hash = "199d4a2fe10f292214cf25784cada04d"
 
 client = TelegramClient("session", api_id, api_hash)
 
 model = joblib.load("spam_model.pkl")
-
-current_chat = None   # <- dynamic channel
-
 
 def clean_text(text):
     text = str(text).lower()
@@ -20,37 +18,23 @@ def clean_text(text):
 
 
 @client.on(events.NewMessage)
-async def handler(event):
-    global current_chat
-
-    if current_chat is None:
-        return
-
-    # only listen to selected channel
-    if event.chat and event.chat.username != current_chat:
-        return
+async def new_message_listener(event):
+    print("MESSAGE EVENT TRIGGERED")
 
     message = event.raw_text
     cleaned = clean_text(message)
+
     prediction = model.predict([cleaned])[0]
 
     if prediction == 1:
+        print("SPAM:", message)
         update_message(message, "SPAM")
     else:
+        print("NORMAL:", message)
         update_message(message, "NORMAL")
 
 
-async def start_bot():
-    await client.start()
-    print("Bot running...")
-    await client.run_until_disconnected()
+print("AI Spam Detector Running...")
 
-
-def set_channel(username):
-    global current_chat
-    current_chat = username
-    print("Now monitoring:", username)
-
-
-if __name__ == "__main__":
-    asyncio.run(start_bot())
+client.start()
+client.run_until_disconnected()
