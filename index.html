@@ -491,8 +491,8 @@
 <script>
 async function fetchMessage() {
     try {
-        const res = await fetch("http://127.0.0.1:5000/get_message");
-        const data = await res.json();
+        const response = await fetch("http://127.0.0.1:5000/get_message");
+        const data = await response.json();
 
         document.querySelector(".info-desc").innerHTML =
             "<b>Latest Message:</b> " + data.text +
@@ -500,13 +500,16 @@ async function fetchMessage() {
             (data.status === "SPAM"
                 ? "<span style='color:red;font-weight:bold'>SPAM</span>"
                 : "<span style='color:lightgreen;font-weight:bold'>NORMAL</span>");
-    } catch (e) {
-        console.log("Server not running yet...");
+
+    } catch (error) {
+        console.log("Backend not running...");
     }
 }
 
+// run every second
 setInterval(fetchMessage, 1000);
 </script>
+
 
 </body>
 </html>
